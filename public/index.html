@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>آکادمی دکتر میلاد کرانیانی</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Vazirmatn', Tahoma, sans-serif;
+  background: #0a0a0a;
+  color: #fff;
+  direction: rtl;
+  line-height: 1.85;
+  min-height: 100vh;
+}
+.header {
+  background: #000;
+  padding: 60px 20px 40px;
+  text-align: center;
+  border-bottom: 2px solid #A5E82C;
+}
+.header h1 {
+  font-size: clamp(28px, 5vw, 48px);
+  color: #A5E82C;
+  margin-bottom: 14px;
+  font-weight: 900;
+}
+.header p { font-size: 18px; margin-bottom: 8px; }
+.header .en { color: #666; font-size: 13px; font-style: italic; }
+.container { max-width: 700px; margin: 0 auto; padding: 40px 20px; }
+form {
+  background: #141414;
+  border: 1px solid #1e1e1e;
+  border-radius: 20px;
+  padding: 30px;
+}
+form h2 { color: #A5E82C; margin-bottom: 24px; font-size: 22px; }
+.field { margin-bottom: 18px; }
+label {
+  display: block;
+  margin-bottom: 8px;
+  color: #ddd;
+  font-size: 14px;
+  font-weight: 600;
+}
+input, textarea {
+  width: 100%;
+  padding: 14px 16px;
+  background: #0a0a0a;
+  border: 1.5px solid #242424;
+  border-radius: 12px;
+  color: #fff;
+  font-family: inherit;
+  font-size: 15px;
+  outline: none;
+  transition: 0.3s;
+}
+input:focus, textarea:focus {
+  border-color: #A5E82C;
+  box-shadow: 0 0 0 3px rgba(165,232,44,0.15);
+}
+.services { display: grid; gap: 10px; }
+.services label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: #0a0a0a;
+  border: 1.5px solid #242424;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 500;
+  margin: 0;
+}
+.services input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  accent-color: #A5E82C;
+}
+button {
+  width: 100%;
+  padding: 16px;
+  background: #A5E82C;
+  color: #0a0a0a;
+  border: none;
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: 0.3s;
+  margin-top: 10px;
+}
+button:hover { background: #C4FF3D; box-shadow: 0 0 30px rgba(165,232,44,0.5); }
+.msg {
+  padding: 16px;
+  border-radius: 12px;
+  margin-top: 16px;
+  text-align: center;
+  font-weight: 600;
+  display: none;
+}
+.msg.success {
+  display: block;
+  background: rgba(165,232,44,0.1);
+  border: 1px solid #A5E82C;
+  color: #A5E82C;
+}
+.msg.error {
+  display: block;
+  background: rgba(255,77,77,0.1);
+  border: 1px solid #ff4d4d;
+  color: #ff8080;
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>آکادمی دکتر میلاد کرانیانی</h1>
+  <p>بدن شما یک شاهکار مهندسی است — کورکورانه نسازید!</p>
+  <p class="en">Your Body Is a Masterpiece of Engineering</p>
+</div>
+
+<div class="container">
+  <form id="form">
+    <h2>📝 ثبت درخواست مشاوره</h2>
+
+    <div class="field">
+      <label>نام و نام خانوادگی *</label>
+      <input type="text" name="full_name" required>
+    </div>
+
+    <div class="field">
+      <label>شماره موبایل *</label>
+      <input type="tel" name="phone" maxlength="11" placeholder="09123456789" required>
+    </div>
+
+    <div class="field">
+      <label>خدمات درخواستی</label>
+      <div class="services">
+        <label><input type="checkbox" name="services" value="مشاوره"> مشاوره تخصصی و آنالیز بدنی</label>
+        <label><input type="checkbox" name="services" value="پاکسازی"> برنامه پاکسازی</label>
+        <label><input type="checkbox" name="services" value="تمرینی"> برنامه تمرینی</label>
+        <label><input type="checkbox" name="services" value="غذایی"> برنامه غذایی</label>
+        <label><input type="checkbox" name="services" value="آنالیز"> بررسی و آنالیز نتایج</label>
+      </div>
+    </div>
+
+    <button type="submit">ارسال درخواست</button>
+    <div class="msg" id="msg"></div>
+  </form>
+</div>
+
+<script>
+document.getElementById('form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const fd = new FormData(e.target);
+  const data = {
+    full_name: fd.get('full_name'),
+    phone: fd.get('phone'),
+    services: fd.getAll('services')
+  };
+
+  const msg = document.getElementById('msg');
+  msg.className = 'msg';
+
+  try {
+    const res = await fetch('/api/requests', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    const result = await res.json();
+
+    if (res.ok) {
+      msg.className = 'msg success';
+      msg.innerHTML = '✅ ' + result.message + '<br><strong>کد پیگیری: ' + result.tracking_code + '</strong>';
+      e.target.reset();
+    } else {
+      msg.className = 'msg error';
+      msg.textContent = '❌ ' + result.error;
+    }
+  } catch (err) {
+    msg.className = 'msg error';
+    msg.textContent = '❌ خطا در ارتباط با سرور';
+  }
+});
+</script>
+</body>
+</html>
